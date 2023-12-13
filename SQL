@@ -1,0 +1,160 @@
+# 輸入套件
+
+import requests
+import pandas as pd
+import sqlite3  #sql套件
+
+＃串聯資料集
+data = sqlite3.connect('路徑')
+
+#select 選出
+query = '''
+SELECT * 
+FROM NEWS 
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+# distinct 選出所有值，但不重複
+query = '''
+SELECT DISTINCT topic  
+FROM NEWS 
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+# where 當
+# = 等於、>大於、<小於、<>不等於、>=大於等於、<=小於等於
+query = '''
+SELECT *
+FROM NEWS 
+WHERE topic = '產經'  
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+
+# and 和
+query = '''
+SELECT *
+FROM NEWS 
+WHERE date >= '2023-01-01' AND  date <= '2023-07-01' 
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+#or 或是
+query = '''
+SELECT *
+FROM NEWS 
+WHERE date <= '2023-01-01' OR  date >= '2023-07-01' 
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+#between 在兩者間
+query = '''
+SELECT *
+FROM NEWS 
+WHERE date BETWEEN '2023-01-01' AND '2023-07-01' 
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+#in 包含該詞彙
+query = '''
+SELECT *
+FROM NEWS 
+WHERE topic IN ('產經', '股市', '基金') 
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+# 詞彙運用
+# '%abc'=skwabc,wjwkabc
+# 'abc%'=abcdke,abcieje
+# 'a_z'= a開頭,z結尾，例如：aez,agz（＿代表一個字母或數字）
+
+#like 像是某某詞彙
+query = '''
+SELECT *
+FROM NEWS 
+WHERE topic like '基金'
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+#group by 群組
+query = '''
+SELECT TIME, COUNT(*) AS aaa
+FROM NEWS 
+WHERE paragraph LIKE '%基金' 
+GROUP BY date
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+#having 函數條件
+query = '''
+SELECT date, COUNT(*) AS aaa
+FROM NEWS 
+WHERE paragraph LIKE '%基金' 
+GROUP BY date
+HAVING aaa >=20
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+#sum 加總
+query = '''
+SELECT SUM(aaa)
+FROM (
+    SELECT date, COUNT(*) AS aaa
+    FROM NEWS 
+    GROUP BY date
+    ) A
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+#avg 平均
+query = '''
+SELECT AVG(aaa)
+FROM (
+    SELECT date, COUNT(*) AS aaa
+    FROM NEWS 
+    GROUP BY date
+    ) A
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+# union 聯集，排除重複項目
+query = '''
+SELECT *
+FROM NEWS 
+WHERE date = '2020-11-01' 
+
+UNION
+
+SELECT *
+FROM NEWS 
+WHERE date = '2020-11-01' 
+'''
+df = pd.read_sql(sql = query, con=data)
+df
+
+# union all 聯集，包含重複項目
+query = '''
+SELECT *
+FROM NEWS 
+WHERE date = '2020-11-01' 
+
+UNION ALL
+
+SELECT *
+FROM NEWS 
+WHERE date = '2020-11-01' 
+'''
+df = pd.read_sql(sql = query, con=data)
+df
